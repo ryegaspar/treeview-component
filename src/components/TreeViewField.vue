@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onMounted, ref} from "vue"
+import { onMounted, ref } from "vue"
 
 const props = defineProps(
 	{
@@ -10,60 +10,86 @@ const props = defineProps(
 		modelValue: {
 			type: Array,
 			default: []
+		},
+		isChild: {
+			type: Boolean,
+			default: false
 		}
 	}
 )
-
+const emit = defineEmits(['update:modelValue'])
 const showChildren = ref({})
+const departments = ref([])
+const selectedIds = ref(props.modelValue)
 
-// onMounted(() => {
-// 	// console.log(props.departments)
-// })
+onMounted(() => {
+	departments.value = props.departments
 
-const departmentComputed = computed(
-	() => {
-		const computed = props.departments
-		computed.forEach(department => {
-			department.selected = props.modelValue.includes(department.department_id)
-		})
+	function initialize(parent) {
+		parent.selected = props.modelValue.includes(parent.department_id)
 
-		return computed
+		if (parent.children.length) {
+			parent.children.forEach(item => initialize(item))
+		}
 	}
-)
+
+	departments.value.forEach(department => initialize(department))
+})
 
 function toggleShowChildren(index) {
 	showChildren.value[index] = !showChildren.value[index]
 }
 
+function selectChanged() {
+	const selectedIds = []
+
+	function setSelected(parent) {
+		if (parent.selected) {
+			selectedIds.push(parent.department_id)
+		}
+
+		if (parent.children.length) {
+			parent.children.forEach(item => setSelected(item))
+		}
+	}
+
+	departments.value.forEach(department => setSelected(department))
+
+	emit('update:modelValue', selectedIds)
+}
+
 </script>
 
 <template>
-	<div v-for="(department, index) in departmentComputed"
+	<div v-for="(department, index) in departments"
 		 :key="index"
 	>
 		<div class="flex justify-between">
 			<div class="flex gap-1">
 				<div v-if="department.children.length"
-					 @click.prevent="toggleShowChildren(index)"
+					 @click.prevent="toggleShowChildren(department.department_id)"
 					 class="hover:cursor-pointer"
 				>
 					<span v-if="!showChildren[index]">+</span>
 					<span v-else>-</span>
 				</div>
 				<label :for="department.department_id">
-					{{ department.department_name }}
+					{{ department.department_name }} (<span class="italic">{{ department.department_id }}</span>)
 				</label>
 			</div>
 			<input type="checkbox"
 				   :id="department.department_id"
 				   v-model="department.selected"
+				   @change.prevent="selectChanged"
 			/>
 		</div>
-		<div v-if="department.children.length && showChildren[index]"
+		<div v-if="department.children.length && showChildren[department.department_id]"
 			 class="ml-6"
 		>
 			<TreeViewField :departments="department.children"
-						   v-model="props.modelValue"
+						   :model-value="selectedIds"
+						   @update:model-value="selectChanged"
+						   :is-child="true"
 			/>
 		</div>
 	</div>

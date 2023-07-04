@@ -1,9 +1,13 @@
 <script setup>
 import TreeViewField from "./components/TreeViewField.vue"
 import mockData from "./data.js"
-import {ref} from "vue"
+import {ref, watch} from "vue"
 
-const selected=ref([2220, 2230])
+const selected = ref([2220, 2230, 2223])
+
+watch(selected, () => {
+	console.log('selected changed!', selected.value)
+})
 </script>
 
 <template>
@@ -13,21 +17,6 @@ const selected=ref([2220, 2230])
 					   v-model="selected"
 		/>
 	</div>
+
+	SELECTED: {{ selected }}
 </template>
-
-<style scoped>
-.logo {
-	height: 6em;
-	padding: 1.5em;
-	will-change: filter;
-	transition: filter 300ms;
-}
-
-.logo:hover {
-	filter: drop-shadow(0 0 2em #646cffaa);
-}
-
-.logo.vue:hover {
-	filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>

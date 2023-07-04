@@ -216,6 +216,14 @@ const mockData =
 							"department_code": "SOF",
 							"department_status_id": "A",
 							"children": []
+						},
+						{
+							"department_id": 2251,
+							"parent_id": 2248,
+							"department_name": "Sub Other Misc Fees 2",
+							"department_code": "SF2",
+							"department_status_id": "A",
+							"children": []
 						}
 					]
 				}
