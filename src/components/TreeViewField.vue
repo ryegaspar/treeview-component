@@ -1,206 +1,70 @@
 <script setup>
-import {myData} from "../data.js"
+import {computed, onMounted, ref} from "vue"
 
-const data = myData()
+const props = defineProps(
+	{
+		departments: {
+			type: Array,
+			required: true
+		},
+		modelValue: {
+			type: Array,
+			default: []
+		}
+	}
+)
 
+const showChildren = ref({})
+
+// onMounted(() => {
+// 	// console.log(props.departments)
+// })
+
+const departmentComputed = computed(
+	() => {
+		const computed = props.departments
+		computed.forEach(department => {
+			department.selected = props.modelValue.includes(department.department_id)
+		})
+
+		return computed
+	}
+)
+
+function toggleShowChildren(index) {
+	showChildren.value[index] = !showChildren.value[index]
+}
 
 </script>
 
 <template>
-	<div class="field-picker-container no-select">
-		<div class="field-picker-item-group">
-			<div class="field-picker-children-group field-picker-top-groups">
-				<div class="field-picker-item-group">
-					<div class="field-picker-row-container">
-						<div class="field-picker-menu-group">
-							<div class="field-picker-sign clickable">-</div>
-							<div class="field-picker-title clickable">Some title</div>
-						</div>
-						<div class="field-picker-checkbox-container">
-							<label class="field-picker-checkbox-label field-picker-checkbox-group" for="field-ai">
-								<input id="field-ai" type="checkbox" name="field-ai" />
-								<span class="field-checkbox-item clickable checked"></span>
-							</label>
-						</div>
-					</div>
-					<div class="field-picker-children-group field-picker-groups">
-						<div class="field-picker-item-group">
-							<div class="field-picker-title clickable">Child</div>
-						</div>
-						<div class="field-picker-checkbox-container">
-							<label class="field-picker-checkbox-label field-picker-checkbox-group" for="field-child1">
-								<input id="field-child1" type="checkbox" name="child1" />
-								<span class="field-checkbox-item clickable checked"></span>
-							</label>
-						</div>
-					</div>
+	<div v-for="(department, index) in departmentComputed"
+		 :key="index"
+	>
+		<div class="flex justify-between">
+			<div class="flex gap-1">
+				<div v-if="department.children.length"
+					 @click.prevent="toggleShowChildren(index)"
+					 class="hover:cursor-pointer"
+				>
+					<span v-if="!showChildren[index]">+</span>
+					<span v-else>-</span>
 				</div>
+				<label :for="department.department_id">
+					{{ department.department_name }}
+				</label>
 			</div>
+			<input type="checkbox"
+				   :id="department.department_id"
+				   v-model="department.selected"
+			/>
+		</div>
+		<div v-if="department.children.length && showChildren[index]"
+			 class="ml-6"
+		>
+			<TreeViewField :departments="department.children"
+						   v-model="props.modelValue"
+			/>
 		</div>
 	</div>
 </template>
-
-<style scoped>
-.field-picker-container {
-	position: absolute;
-	z-index: 999;
-	background: #ffffff;
-	box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.12);
-	width: 300px;
-	height: auto;
-	font-style: normal;
-	font-weight: 400;
-	font-size: 14px;
-	line-height: 22px;
-	color: #21293c;
-	padding: 24px;
-	padding-top: 8px;
-	overflow: hidden;
-}
-
-.field-picker-container.no-select {
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-
-.field-picker-container .clickable {
-	cursor: pointer;
-}
-
-.field-picker-container.hide,
-.field-picker-container .hide {
-	display: none;
-}
-
-.field-picker-container .field-picker-row-container {
-	display: block;
-	overflow: hidden;
-}
-
-.field-picker-container .field-picker-title,
-.field-picker-container .field-picker-menu-group {
-	float: left;
-}
-
-.field-picker-container .field-picker-checkbox-container {
-	float: right;
-}
-
-.field-picker-container .field-picker-menu-group {
-	overflow: hidden;
-}
-
-.field-picker-container .field-picker-item-group {
-	margin-top: 16px;
-}
-
-.field-picker-container .field-picker-item-group .field-picker-title {
-	font-family: "Noto Sans SC";
-	font-style: normal;
-	font-weight: 400;
-	font-size: 14px;
-	line-height: 22px;
-	color: #21293c;
-}
-
-.field-picker-container .field-picker-children-group {
-	margin-left: 12px;
-}
-
-.field-picker-container .field-picker-children-group .field-picker-sign {
-	float: left;
-	width: 8px;
-	font-style: normal;
-	font-weight: 400;
-	font-size: 14px;
-	line-height: 22px;
-	color: #667190;
-	margin-right: 10px;
-}
-
-.field-picker-container input[type="checkbox"] {
-	display: none;
-	visibility: hidden;
-}
-
-.field-picker-container .field-checkbox-item {
-	display: inline-block;
-	width: 16px;
-	height: 16px;
-	background: #eaf0f3;
-	border: 0.5px solid #a9b5c2;
-	border-radius: 2px;
-	position: relative;
-}
-
-.field-picker-container .field-checkbox-item::after {
-	content: "";
-	position: absolute;
-	top: 1px;
-	left: 5px;
-	border: 1px solid #fff;
-	border-left: 0;
-	border-top: 0;
-	width: 5px;
-	height: 9px;
-	-webkit-transform: rotate(45deg) scaleY(0);
-	-moz-transform: rotate(45deg) scaleY(0);
-	-ms-transform: rotate(45deg) scaleY(0);
-	-o-transform: rotate(45deg) scaleY(0);
-	transform: rotate(45deg) scaleY(0);
-	-webkit-transition: transform 0.1s ease-in 0.05s;
-	-moz-transition: transform 0.1s ease-in 0.05s;
-	-ms-transition: transform 0.1s ease-in 0.05s;
-	-o-transition: transform 0.1s ease-in 0.05s;
-	transition: transform 0.1s ease-in 0.05s;
-}
-
-.field-picker-container .field-picker-checkbox-group .is-indeterminate {
-	background: #eaf0f3;
-	border: 0.5px solid #a9b5c2;
-}
-
-.field-picker-container .field-picker-checkbox-group .is-indeterminate::before {
-	content: "";
-	position: absolute;
-	display: block;
-	background-color: #667190;
-	height: 2px;
-	transform: scale(0.5);
-	left: 0;
-	right: 0;
-	top: 6px;
-}
-
-.field-picker-container .field-picker-checkbox-group input[type="checkbox"]:checked + span {
-	background-color: #428eff;
-	border-color: #428eff;
-}
-
-.field-picker-container .field-picker-checkbox-group input[type="checkbox"]:checked + span::after {
-	-webkit-transform: rotate(45deg) scaleY(1);
-	-moz-transform: rotate(45deg) scaleY(1);
-	-ms-transform: rotate(45deg) scaleY(1);
-	-o-transform: rotate(45deg) scaleY(1);
-	transform: rotate(45deg) scaleY(1);
-}
-
-.field-picker-container .field-picker-checkbox-group input[type="checkbox"]:disabled + span {
-	background: #eaf0f3;
-	border: 0.5px solid #a9b5c2;
-	border-radius: 2px;
-}
-
-.field-picker-container .field-picker-checkbox-group input[type="checkbox"]:disabled + span::after {
-	position: absolute;
-	top: 1px;
-	left: 5px;
-	border: 2px solid #a9b5c2;
-	border-left: 0;
-	border-top: 0;
-	width: 5px;
-	height: 9px;
-}
-</style>

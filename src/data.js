@@ -1,5 +1,5 @@
-export function myData() {
-	return [
+const mockData =
+	[
 		{
 			"department_id": 2220,
 			"parent_id": 2219,
@@ -16,14 +16,16 @@ export function myData() {
 					"children": []
 				}
 			]
-		}, {
+		},
+		{
 			"department_id": 2223,
 			"parent_id": 2219,
 			"department_name": "Mobile Home",
 			"department_code": "M",
 			"department_status_id": "A",
 			"children": []
-		}, {
+		},
+		{
 			"department_id": 2224,
 			"parent_id": 2219,
 			"department_name": "Register of Deeds",
@@ -60,7 +62,8 @@ export function myData() {
 					"children": []
 				}
 			]
-		}, {
+		},
+		{
 			"department_id": 2229,
 			"parent_id": 2219,
 			"department_name": "Law Enforcement",
@@ -111,7 +114,8 @@ export function myData() {
 					"children": []
 				}
 			]
-		}, {
+		},
+		{
 			"department_id": 2236,
 			"parent_id": 2219,
 			"department_name": "Recreation",
@@ -162,7 +166,8 @@ export function myData() {
 					"children": []
 				}
 			]
-		}, {
+		},
+		{
 			"department_id": 2243,
 			"parent_id": 2219,
 			"department_name": "Other Fees",
@@ -217,4 +222,4 @@ export function myData() {
 			]
 		}
 	]
-}
+export default mockData
