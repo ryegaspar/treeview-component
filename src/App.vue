@@ -3,7 +3,7 @@ import TreeViewField from "./components/TreeViewField.vue"
 import mockData from "./data.js"
 import {ref, watch} from "vue"
 
-const selected = ref([2, 3, 11, 30])
+const selected = ref([2, 3, 10, 11, 24, 29, 30])
 
 watch(selected, () => {
 	console.log('selected changed!', selected.value)

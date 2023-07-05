@@ -56,7 +56,7 @@ function checkChanged(department) {
 
 	selectedIds.value = []
 	function setSelectedIds(parent) {
-		if (parent.selected) {
+		if (parent.selected || parent.triState) {
 			selectedIds.value.push(parent.department_id)
 		}
 
