@@ -65,7 +65,7 @@ function checkChanged(department) {
 		}
 	}
 
-	function changeStatus(department, status) {
+	function updateSelected(department, status) {
 		if (status) {
 			department.triState = false
 		}
@@ -73,15 +73,48 @@ function checkChanged(department) {
 		department.selected = status
 
 		if (department.children.length) {
-			department.children.forEach(item => changeStatus(item, status))
+			department.children.forEach(item => updateSelected(item, status))
 		}
 	}
 
-	if (department?.children?.length) {
-		department.children.forEach(item => changeStatus(item, department.selected))
+	function updateTriState(department) {
+		const childrenCount = department.children.length
+
+		if (childrenCount) {
+			department.children.forEach(item => updateTriState(item))
+
+			const selectedChildrenCount = department.children.filter(item => item.selected).length
+			const triStateChildrenCount = department.children.filter(item => item.triState).length
+
+			department.triState = false
+
+			if (
+				(selectedChildrenCount > 0 && selectedChildrenCount !== childrenCount) ||
+				triStateChildrenCount
+			) {
+				department.triState = true
+				department.selected = false
+			}
+
+			if (!selectedChildrenCount) {
+				department.selected = false
+			}
+
+			if (selectedChildrenCount === childrenCount) {
+				department.selected = true
+			}
+		}
 	}
 
-	// setListStatus()
+	// update children selected status
+	if (department?.children?.length) {
+		department.children.forEach(item => updateSelected(item, department.selected))
+	}
+
+	// update tristate and parent status
+	departments.value.forEach(department => updateTriState(department))
+
+	// set selectedIds
 	departments.value.forEach(department => setSelectedIds(department))
 
 	emit('update:modelValue', selectedIds.value)
