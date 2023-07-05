@@ -11,4 +11,4 @@ This template should help get you started developing with Vue 3 in Vite. The tem
 - [x] v-model
 - [x] tri-state
 - [ ] update tri-state on select
-- [ ] checking/unchecking a parent should check/uncheck children as well
+- [x] checking/unchecking a parent should check/uncheck children as well
