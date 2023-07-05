@@ -28,8 +28,20 @@ onMounted(() => {
 	function initialize(parent) {
 		parent.selected = props.modelValue.includes(parent.department_id)
 
-		if (parent.children.length) {
+		const childrenCount = parent.children.length
+
+		if (childrenCount) {
 			parent.children.forEach(item => initialize(item))
+
+			const selectedChildrenCount = parent.children.filter(item => item.selected).length
+
+			// set checkbox tri-state
+			parent.triState = false
+			if (selectedChildrenCount > 0 && selectedChildrenCount !== childrenCount) {
+				parent.triState = true
+
+				showChildren.value[parent.department_id] = true
+			}
 		}
 	}
 
@@ -70,8 +82,7 @@ function selectChanged() {
 					 @click.prevent="toggleShowChildren(department.department_id)"
 					 class="hover:cursor-pointer"
 				>
-					<span v-if="!showChildren[index]">+</span>
-					<span v-else>-</span>
+					<span>{{ showChildren[department.department_id] ? '-' : '+'}}</span>
 				</div>
 				<label :for="department.department_id">
 					{{ department.department_name }} (<span class="italic">{{ department.department_id }}</span>)
@@ -81,6 +92,7 @@ function selectChanged() {
 				   :id="department.department_id"
 				   v-model="department.selected"
 				   @change.prevent="selectChanged"
+				   :indeterminate="department.triState"
 			/>
 		</div>
 		<div v-if="department.children.length && showChildren[department.department_id]"
