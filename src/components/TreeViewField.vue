@@ -10,10 +10,6 @@ const props = defineProps(
 		modelValue: {
 			type: Array,
 			default: []
-		},
-		isChild: {
-			type: Boolean,
-			default: false
 		}
 	}
 )
@@ -56,24 +52,40 @@ function toggleShowChildren(index) {
 	showChildren.value[index] = !showChildren.value[index]
 }
 
-function selectChanged() {
-	const selectedIds = []
+function checkChanged(department) {
 
-	function setSelected(parent) {
+	selectedIds.value = []
+	function setSelectedIds(parent) {
 		if (parent.selected) {
-			selectedIds.push(parent.department_id)
+			selectedIds.value.push(parent.department_id)
 		}
 
 		if (parent.children.length) {
-			parent.children.forEach(item => setSelected(item))
+			parent.children.forEach(item => setSelectedIds(item))
 		}
 	}
 
-	departments.value.forEach(department => setSelected(department))
+	function changeStatus(department, status) {
+		if (status) {
+			department.triState = false
+		}
 
-	emit('update:modelValue', selectedIds)
+		department.selected = status
+
+		if (department.children.length) {
+			department.children.forEach(item => changeStatus(item, status))
+		}
+	}
+
+	if (department?.children?.length) {
+		department.children.forEach(item => changeStatus(item, department.selected))
+	}
+
+	// setListStatus()
+	departments.value.forEach(department => setSelectedIds(department))
+
+	emit('update:modelValue', selectedIds.value)
 }
-
 </script>
 
 <template>
@@ -95,7 +107,7 @@ function selectChanged() {
 			<input type="checkbox"
 				   :id="department.department_id"
 				   v-model="department.selected"
-				   @change.prevent="selectChanged"
+				   @change.prevent="checkChanged(department)"
 				   :indeterminate="department.triState"
 			/>
 		</div>
@@ -104,8 +116,7 @@ function selectChanged() {
 		>
 			<TreeViewField :departments="department.children"
 						   :model-value="selectedIds"
-						   @update:model-value="selectChanged"
-						   :is-child="true"
+						   @update:model-value="checkChanged"
 			/>
 		</div>
 	</div>
