@@ -6,3 +6,9 @@ This template should help get you started developing with Vue 3 in Vite. The tem
 
 - run `yarn` or `npm install`
 - then run `yarn dev` or `npm run dev`
+
+## TODO
+- [x] v-model
+- [x] tri-state
+- [ ] update tri-state on select
+- [ ] checking a parent should check children as well

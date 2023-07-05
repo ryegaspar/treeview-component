@@ -34,10 +34,14 @@ onMounted(() => {
 			parent.children.forEach(item => initialize(item))
 
 			const selectedChildrenCount = parent.children.filter(item => item.selected).length
+			const triStateChildrenCount = parent.children.filter(item => item.triState).length
 
-			// set checkbox tri-state
+			// set checkbox tri-state and show children
 			parent.triState = false
-			if (selectedChildrenCount > 0 && selectedChildrenCount !== childrenCount) {
+			if (
+				(selectedChildrenCount > 0 && selectedChildrenCount !== childrenCount) ||
+				triStateChildrenCount
+			) {
 				parent.triState = true
 
 				showChildren.value[parent.department_id] = true
